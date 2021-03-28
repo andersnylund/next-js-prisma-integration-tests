@@ -1,0 +1,9 @@
+{
+  "name": "next-js-prisma-integration-tests",
+  "version": "1.0.0",
+  "description": "Next.js and Prisma integration tests example",
+  "repository": "git@github.com:andersnylund/next-js-prisma-integration-tests.git",
+  "author": "Anders Nylund <anders@andersnylund.com>",
+  "license": "MIT",
+  "private": true
+}
