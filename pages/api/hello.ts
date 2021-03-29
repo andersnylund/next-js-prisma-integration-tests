@@ -1,7 +1,11 @@
-import { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import nc, { RequestHandler } from 'next-connect';
 
-const handler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {
-  res.status(200).json({ name: 'John Doe' });
+const getHandler: RequestHandler<NextApiRequest, NextApiResponse> = (
+  req,
+  res
+) => {
+  return res.status(200).json({ name: 'John Doe' });
 };
 
-export default handler;
+export default nc().get(getHandler);
