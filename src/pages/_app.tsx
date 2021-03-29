@@ -1,6 +1,7 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ReactElement } from 'react';
+import '../styles/globals.css';
 
 const App = ({ Component, pageProps }: AppProps): ReactElement => {
   return (
