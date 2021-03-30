@@ -1,64 +1,68 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
+import { FormEventHandler, useEffect, useState } from 'react';
 import styles from '../styles/Home.module.css';
 
-export const Home: NextPage = () => (
-  <div className={styles.container}>
-    <Head>
-      <title>Create Next App</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+interface Post {
+  id: string;
+  text: string;
+}
 
-    <main className={styles.main}>
-      <h1 className={styles.title}>
-        Welcome to <a href="https://nextjs.org">Next.js!</a>
-      </h1>
+export const Home: NextPage = () => {
+  const [text, setText] = useState('');
+  const [posts, setPosts] = useState<Post[]>([]);
 
-      <p className={styles.description}>
-        Get started by editing{' '}
-        <code className={styles.code}>pages/index.js</code>
-      </p>
+  const fetchPosts = async () => {
+    const posts = await (await fetch('/api/posts')).json();
+    setPosts(posts);
+  };
 
-      <div className={styles.grid}>
-        <a href="https://nextjs.org/docs" className={styles.card}>
-          <h3>Documentation &rarr;</h3>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-        <a href="https://nextjs.org/learn" className={styles.card}>
-          <h3>Learn &rarr;</h3>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
+  const createPost: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    await fetch('/api/posts', {
+      body: JSON.stringify({ text }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    });
+    setText('');
+    fetchPosts();
+  };
 
-        <a
-          href="https://github.com/vercel/next.js/tree/master/examples"
-          className={styles.card}
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Next.js and Prisma Integration tests</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          className={styles.card}
-        >
-          <h3>Deploy &rarr;</h3>
-          <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-        </a>
-      </div>
-    </main>
+      <main className={styles.main}>
+        <form onSubmit={createPost}>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            type="text"
+            placeholder="What is on your mind?"
+          />
+          <button>Post</button>
+        </form>
 
-    <footer className={styles.footer}>
-      <a
-        href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by{' '}
-        <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-      </a>
-    </footer>
-  </div>
-);
+        <div>
+          <p>Posts</p>
+          <ul>
+            {posts.map((post) => (
+              <li key={post.id}>{post.text}</li>
+            ))}
+          </ul>
+        </div>
+      </main>
+    </div>
+  );
+};
 
 export default Home;
