@@ -1,6 +1,6 @@
-import { NextPage } from 'next';
+import { InferGetServerSidePropsType, NextPage } from 'next';
 import Head from 'next/head';
-import { FormEventHandler, useEffect, useState } from 'react';
+import { FormEventHandler, useState } from 'react';
 import styles from '../styles/Home.module.css';
 
 interface Post {
@@ -8,18 +8,15 @@ interface Post {
   text: string;
 }
 
-export const Home: NextPage = () => {
+const fetchPosts = async (): Promise<Post[]> => {
+  return await (await fetch('http://localhost:3000/api/posts')).json();
+};
+
+const Index: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ posts: serverPosts }) => {
   const [text, setText] = useState('');
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  const fetchPosts = async () => {
-    const posts = await (await fetch('/api/posts')).json();
-    setPosts(posts);
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const [posts, setPosts] = useState<Post[]>(serverPosts);
 
   const createPost: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -31,7 +28,8 @@ export const Home: NextPage = () => {
       method: 'POST',
     });
     setText('');
-    fetchPosts();
+    const posts = await fetchPosts();
+    setPosts(posts);
   };
 
   return (
@@ -65,4 +63,17 @@ export const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export const getServerSideProps = async (): Promise<{
+  props: {
+    posts: Post[];
+  };
+}> => {
+  const posts: Post[] = await fetchPosts();
+  return {
+    props: {
+      posts,
+    },
+  };
+};
+
+export default Index;
