@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: yarn install
+        run: yarn
+      - name: Spin up test database
+        run: docker-compose up -d
+      - name: Wait until database up and running
+        run: docker ps -a
+      - name: Prisma migrate
+        run: yarn prisma migrate dev
+        env:
+          DATABASE_URL: postgres://dbuser:password@localhost:5433
+      - name: Test
+        run: yarn test
+      - name: Lint
+        run: yarn lint
+      - name: Build
+        run: yarn build
