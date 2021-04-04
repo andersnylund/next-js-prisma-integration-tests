@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import nc, { RequestHandler } from 'next-connect';
 import prisma from '../../prisma';
 
-const get: RequestHandler<NextApiRequest, NextApiResponse> = async (
+const getPost: RequestHandler<NextApiRequest, NextApiResponse> = async (
   req,
   res
 ) => {
@@ -10,7 +10,7 @@ const get: RequestHandler<NextApiRequest, NextApiResponse> = async (
   res.json(posts);
 };
 
-const post: RequestHandler<NextApiRequest, NextApiResponse> = async (
+const createPost: RequestHandler<NextApiRequest, NextApiResponse> = async (
   req,
   res
 ) => {
@@ -19,4 +19,4 @@ const post: RequestHandler<NextApiRequest, NextApiResponse> = async (
   res.status(201).json(post);
 };
 
-export default nc().get(get).post(post);
+export default nc().get(getPost).post(createPost);

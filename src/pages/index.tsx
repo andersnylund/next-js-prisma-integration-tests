@@ -8,9 +8,8 @@ interface Post {
   text: string;
 }
 
-const fetchPosts = async (): Promise<Post[]> => {
-  return await (await fetch('http://localhost:3000/api/posts')).json();
-};
+const fetchPosts = async (): Promise<Post[]> =>
+  (await fetch('http://localhost:3000/api/posts')).json();
 
 const Index: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
@@ -28,6 +27,14 @@ const Index: NextPage<
       method: 'POST',
     });
     setText('');
+    const posts = await fetchPosts();
+    setPosts(posts);
+  };
+
+  const removePost = async (postId: string): Promise<void> => {
+    await fetch(`http://localhost:3000/api/posts/${postId}`, {
+      method: 'DELETE',
+    });
     const posts = await fetchPosts();
     setPosts(posts);
   };
@@ -51,10 +58,12 @@ const Index: NextPage<
         </form>
 
         <div>
-          <p>Posts</p>
           <ul>
             {posts.map((post) => (
-              <li key={post.id}>{post.text}</li>
+              <li className={styles.item} key={post.id}>
+                <div>{post.text}</div>
+                <button onClick={() => removePost(post.id)}>x</button>
+              </li>
             ))}
           </ul>
         </div>
