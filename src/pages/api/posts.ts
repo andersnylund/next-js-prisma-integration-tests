@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import nc, { RequestHandler } from 'next-connect';
 import prisma from '../../prisma';
+import { onError } from './utils';
 
 const getPost: RequestHandler<NextApiRequest, NextApiResponse> = async (
   req,
@@ -19,4 +20,4 @@ const createPost: RequestHandler<NextApiRequest, NextApiResponse> = async (
   res.status(201).json(post);
 };
 
-export default nc().get(getPost).post(createPost);
+export default nc({ onError }).get(getPost).post(createPost);

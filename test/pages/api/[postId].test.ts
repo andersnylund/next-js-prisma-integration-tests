@@ -37,4 +37,42 @@ describe('posts', () => {
       expect(posts).toEqual([]);
     });
   });
+
+  describe('DELETE with invalid query', () => {
+    beforeAll(async () => {
+      await setup(handler, { postId: ['invalid', 'query'] });
+    });
+
+    afterAll(teardown);
+
+    it('returns 500 if query invalid', async () => {
+      const response = await fetch(TEST_SERVER_ADDRESS, {
+        method: 'DELETE',
+      });
+      expect(response.status).toEqual(500);
+      expect(await response.json()).toEqual({ message: 'invalid query' });
+
+      const posts = await prisma.post.findMany();
+      expect(posts).toEqual([]);
+    });
+  });
+
+  describe('DELETE with empty query', () => {
+    beforeAll(async () => {
+      await setup(handler, {});
+    });
+
+    afterAll(teardown);
+
+    it('returns 500 if query invalid', async () => {
+      const response = await fetch(TEST_SERVER_ADDRESS, {
+        method: 'DELETE',
+      });
+      expect(response.status).toEqual(500);
+      expect(await response.json()).toEqual({ message: 'invalid query' });
+
+      const posts = await prisma.post.findMany();
+      expect(posts).toEqual([]);
+    });
+  });
 });
